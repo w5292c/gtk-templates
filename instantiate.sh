@@ -29,11 +29,17 @@ SOURCE_FILENAME="${FILE_NAME_BASE}.c"
 cp gtemplate.c "${SOURCE_FILENAME}"
 cp gtemplate.h "${HEADER_FILENAME}"
 
-sed  "s/gobj_template/${STR_SMALL}/g" --in-place ${HEADER_FILENAME}
-sed  "s/gobj_template/${STR_SMALL}/g" --in-place ${SOURCE_FILENAME}
+# Update methods names
+sed  "s/_application/_${STR_SMALL}/g" --in-place ${HEADER_FILENAME}
+sed  "s/_application/_${STR_SMALL}/g" --in-place ${SOURCE_FILENAME}
 
-sed  "s/GOBJ_TEMPLATE/${STR_BIG}/g" --in-place ${HEADER_FILENAME}
-sed  "s/GOBJ_TEMPLATE/${STR_BIG}/g" --in-place ${SOURCE_FILENAME}
+# Update macros names
+sed  "s/_APPLICATION/_${STR_BIG}/g" --in-place ${HEADER_FILENAME}
+sed  "s/_APPLICATION/_${STR_BIG}/g" --in-place ${SOURCE_FILENAME}
 
-sed  "s/GObjectTemplate/${CLASS_NAME}/g" --in-place ${HEADER_FILENAME}
-sed  "s/GObjectTemplate/${CLASS_NAME}/g" --in-place ${SOURCE_FILENAME}
+# Update classes names
+sed  "s/Application/${CLASS_NAME}/g" --in-place ${HEADER_FILENAME}
+sed  "s/Application/${CLASS_NAME}/g" --in-place ${SOURCE_FILENAME}
+
+# Update 'include' directive
+sed  "s/udm-application\.h/${HEADER_FILENAME}/g" --in-place ${SOURCE_FILENAME}
