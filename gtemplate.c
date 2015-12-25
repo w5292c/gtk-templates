@@ -1,119 +1,59 @@
-/*
- The MIT License (MIT)
- Copyright (c) 2015 Alexander Chumakov
+#include "udm-application.h"
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+typedef struct {
+  gint mExample;
+} UdmApplicationPrivate;
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
+static void udm_application_init(UdmApplication *self);
+static void udm_application_class_init(UdmApplicationClass *klass);
+static void udm_application_dispose(GObject *gobject);
+static void udm_application_finalize(GObject *gobject);
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
- */
-#include "gtemplate.h"
+G_DEFINE_TYPE_WITH_PRIVATE (UdmApplication, udm_application, G_TYPE_OBJECT)
 
-#define APD_GOBJ_TEMPLATE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), APD_TYPE_GOBJ_TEMPLATE, ApdGObjectTemplatePrivate))
-
-typedef struct
+UdmApplication *udm_application_new(void)
 {
-  gchar *m_pExample;
-  gboolean m_bExample;
-} ApdGObjectTemplatePrivate;
-
-G_DEFINE_TYPE (ApdGObjectTemplate, apd_gobj_template, G_TYPE_OBJECT);
-
-static void apd_gobj_template_finalize (GObject *pSelf);
-
-ApdGObjectTemplate* apd_gobj_template_new (void)
-{
-  return APD_GOBJ_TEMPLATE (g_object_new (APD_TYPE_GOBJ_TEMPLATE, NULL));
+  return UDM_APPLICATION(g_object_new(udm_application_get_type(), NULL));
 }
 
-static void apd_gobj_template_class_init (ApdGObjectTemplateClass *klass)
+void udm_application_init(UdmApplication *self)
 {
-  GObjectClass *const pGObjectClass = G_OBJECT_CLASS (klass);
-  g_debug ("apd_gobj_template_class_init: %p, %p", pGObjectClass, klass);
-
-  pGObjectClass->finalize = apd_gobj_template_finalize;
-
-  g_type_class_add_private (klass, sizeof (ApdGObjectTemplatePrivate));
+  g_print("Init\n");
 }
 
-void apd_gobj_template_finalize (GObject *pSelf)
+void udm_application_class_init(UdmApplicationClass *klass)
 {
-  g_debug ("apd_gobj_template_finalize: %p", pSelf);
-  ApdGObjectTemplatePrivate *const pPriv = APD_GOBJ_TEMPLATE_GET_PRIVATE (pSelf);
-  g_return_if_fail (pPriv);
+  GObjectClass *object_class = G_OBJECT_CLASS(klass);
 
-  g_free (pPriv->m_pDriver);
-  g_free (pPriv->m_pSerial);
-  g_free (pPriv->m_pFirmware);
-  g_free (pPriv->m_pLastError);
-  g_free (pPriv->m_pDevicePath);
-
-  if (G_OBJECT_CLASS (apd_gobj_template_parent_class)->finalize)
-  {
-    (*G_OBJECT_CLASS (apd_gobj_template_parent_class)->finalize) (pSelf);
-  }
+  object_class->dispose = udm_application_dispose;
+  object_class->finalize = udm_application_finalize;
+  g_print("Class init\n");
 }
 
-static void apd_gobj_template_init (ApdGObjectTemplate *pSelf)
+void udm_application_dispose(GObject *gobject)
 {
-  ApdGObjectTemplatePrivate *const pPriv = APD_GOBJ_TEMPLATE_GET_PRIVATE (pSelf);
-  g_return_if_fail (pPriv);
-  g_debug ("apd_gobj_template_class_init: %p, %p", pSelf, pPriv);
-
-  pPriv->m_pExample = NULL;
-  pPriv->m_bExample = FALSE;
+  g_print("Dispose\n");
 }
 
-const char *apd_gobj_template_get_sexample (ApdGObjectTemplate *pSelf)
+void udm_application_finalize(GObject *gobject)
 {
-  g_debug ("apd_gobj_template_get_sexample: %p", pSelf);
-  ApdGObjectTemplatePrivate *const pPriv = APD_GOBJ_TEMPLATE_GET_PRIVATE (pSelf);
-  g_return_val_if_fail (pPriv, NULL);
-
-  return pPriv->m_pDevicePath;
+  g_print("Finalize\n");
 }
 
-void apd_gobj_template_set_sexample (ApdGObjectTemplate *pSelf, const char *pExample)
+gint udm_application_get_example(UdmApplication *self)
 {
-  g_debug ("apd_gobj_template_set_sexample: %p, %s", pSelf, pExample);
-  ApdGObjectTemplatePrivate *const pPriv = APD_GOBJ_TEMPLATE_GET_PRIVATE (pSelf);
-  g_return_if_fail (pPriv);
+  g_return_val_if_fail(self, 0);
+  UdmApplicationPrivate *const priv = udm_application_get_instance_private(self);
+  g_return_val_if_fail(priv, 0);
 
-  if (pPriv->m_pExample)
-  {
-    g_free (pPriv->m_pExample);
-  }
-
-  pPriv->m_pExample = g_strdup (pExample);
+  return priv->mExample;
 }
 
-gboolean apd_gobj_template_get_bexample (ApdGObjectTemplate *pSelf)
+void udm_application_set_example(UdmApplication *self, gint value)
 {
-  g_debug ("apd_gobj_template_get_bexample: %p", pSelf);
-  ApdGObjectTemplatePrivate *const pPriv = APD_GOBJ_TEMPLATE_GET_PRIVATE (pSelf);
-  g_return_val_if_fail (pPriv, FALSE);
+  g_return_if_fail(self);
+  UdmApplicationPrivate *const priv = udm_application_get_instance_private(self);
+  g_return_if_fail(priv);
 
-  return pPriv->m_bExample;
-}
-
-void apd_gobj_template_set_bexample (ApdGObjectTemplate *pSelf, gboolean bExample)
-{
-  g_debug ("apd_gobj_template_set_bexample: %p, %d", pSelf, bSeated);
-  ApdGObjectTemplatePrivate *const pPriv = APD_GOBJ_TEMPLATE_GET_PRIVATE (pSelf);
-  g_return_if_fail (pPriv);
-
-  pPriv->m_bExample = bExample;
+  priv->mExample = value;
 }
